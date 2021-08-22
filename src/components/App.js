@@ -2,170 +2,153 @@ import Footer from "./Footer";
 import Header from "./Header";
 import ImagePopup from "./ImagePopup";
 import Main from "./Main";
+import PopupWithForm from "./PopupWithForm";
+import api from "../utils/api";
+import { useEffect, useState } from "react";
 
 function App() {
+  //Синхронный вывод данных User и Card ====================================
+  const [cards, setCards] = useState([]);
+  const [dataUser, setUser] = useState([]);
+
+  useEffect(() => {
+    api
+      .renderFirstData()
+      .then(([dataUser, cards]) => {
+        setCards(cards);
+        setUser(dataUser);
+      })
+      .catch((error) => {
+        console.log(`Ошибка получения данных ${error}`);
+      });
+  }, []);
+
+  // Первоначальное состояние попапа Profile (False - закрыт)===============
+  const [isEditProfilePopupOpen, setProfilePopupOpen] = useState(false);
+  // Обработчик состояние попапа Profile (Меняем на True)===================
+  const onEditProfile = () => {
+    setProfilePopupOpen(true);
+  };
+
+  // Первоначальное состояние попапа Place (False - закрыт)=================
+  const [isAddPlacePopupOpen, setPlacePopupOpen] = useState(false);
+  // Обработчик состояние попапа Place (Меняем на True)=====================
+  const onAddPlace = () => {
+    setPlacePopupOpen(true);
+  };
+  // Первоначальное состояние попапа Avatar (False - закрыт)================
+  const [isEditAvatarPopupOpen, setAvatarPopupOpen] = useState(false);
+  // Обработчик состояние попапа Avatar (Меняем на True)====================
+  const onEditAvatar = () => {
+    console.log("Avatar");
+    setAvatarPopupOpen(true);
+  };
+
+  // Первоначальное состояние попапа Foto (Null)============================
+  const [selectedCard, setSelectedCard] = useState(null);
+  // Обработчик состояние попапа Foto (Меняем на полученный props)==========
+  const onCardClick = (card) => {
+    setSelectedCard(card);
+    console.log(card);
+  };
+
+  // Закрытие попапа (смена состояния на - False)===========================
+  function closeAllPopups() {
+    setProfilePopupOpen(false);
+    setPlacePopupOpen(false);
+    setAvatarPopupOpen(false);
+    setSelectedCard(false);
+  }
+
   return (
-    <div className="page" id="root">
+    <div classNameName="page" id="root">
       <Header />
-      <Main></Main>
+      <Main
+        cards={cards}
+        data={dataUser}
+        handleEditProfileClick={onEditProfile}
+        handleAddPlaceClick={onAddPlace}
+        handleEditAvatarClick={onEditAvatar}
+        handleCardClick={onCardClick}
+      />
       <Footer />
-      <ImagePopup />
+      <ImagePopup card={selectedCard} onClose={closeAllPopups} />
+      <PopupWithForm
+        isOpen={isEditProfilePopupOpen}
+        onClose={closeAllPopups}
+        name="profile"
+        title="Редактировать профиль"
+        btnName="Сохранить"
+      >
+        <input
+          className="popup__input popup__input_value_name"
+          id="name-user"
+          minLength="2"
+          maxLength="40"
+          placeholder="Введите ФИО"
+          type="text"
+          name="name"
+          required
+        />
+        <span className="popup__input-error name-user-error"></span>
+        <input
+          className="popup__input popup__input_value_job"
+          id="about-input"
+          minLength="2"
+          maxLength="200"
+          placeholder="Введите специализацию"
+          type="text"
+          name="about"
+          required
+        />
+        <span className="popup__input-error about-input-error"></span>
+      </PopupWithForm>
+      <PopupWithForm
+        isOpen={isAddPlacePopupOpen}
+        onClose={closeAllPopups}
+        name="mesto"
+        title="Новое место"
+        btnName="Создать"
+      >
+        <input
+          className="popup__input popup__input_value_mesto"
+          id="name-input"
+          minLength="2"
+          maxLength="30"
+          placeholder="Название"
+          type="text"
+          name="name"
+          required
+        />
+        <span className="popup__input-error name-input-error"></span>
+        <input
+          className="popup__input popup__input_value_link"
+          id="link-input"
+          placeholder="Ссылка на картинку"
+          type="url"
+          name="link"
+          required
+        />
+        <span className="popup__input-error link-input-error"></span>
+      </PopupWithForm>
+      <PopupWithForm
+        isOpen={isEditAvatarPopupOpen}
+        onClose={closeAllPopups}
+        name="avatar"
+        title="Обновить аватар"
+        btnName="Сохранить"
+      >
+        <input
+          className="popup__input popup__input_value_avatar"
+          id="avatar-input"
+          placeholder="Ссылка на новый аватар"
+          type="url"
+          name="avatar"
+          required
+        />
 
-      <div className="popup" id="popup_form_profile">
-        <div className="popup__container">
-          <form
-            className="popup__form popup__form_type_profile"
-            id="form_profile"
-            name="formProfile"
-            novalidate
-          >
-            <button
-              className="popup__close"
-              type="button"
-              aria-label="Кнопка закрытия формы"
-            ></button>
-            <fieldset className="popup__data">
-              <legend className="popup__title">Редактировать профиль</legend>
-              <input
-                className="popup__input popup__input_value_name"
-                id="name-user"
-                minlength="2"
-                maxlength="40"
-                placeholder="Введите ФИО"
-                type="text"
-                name="name"
-                required
-              />
-              <span className="popup__input-error name-user-error"></span>
-              <input
-                className="popup__input popup__input_value_job"
-                id="about-input"
-                minlength="2"
-                maxlength="200"
-                placeholder="Введите специализацию"
-                type="text"
-                name="about"
-                required
-              />
-              <span className="popup__input-error about-input-error"></span>
-            </fieldset>
-            <button
-              type="submit"
-              className="popup__button"
-              aria-label="Сохранить"
-            >
-              Сохранить
-            </button>
-          </form>
-        </div>
-      </div>
-
-      <div className="popup" id="popup_form_mesto">
-        <div className="popup__container">
-          <form
-            className="popup__form popup__form_type_profile"
-            id="form_mesto"
-            name="formMesto"
-            novalidate
-          >
-            <button
-              className="popup__close"
-              type="button"
-              aria-label="Кнопка закрытия формы"
-            ></button>
-            <fieldset className="popup__data">
-              <legend className="popup__title">Новое место</legend>
-              <input
-                className="popup__input popup__input_value_mesto"
-                id="name-input"
-                minlength="2"
-                maxlength="30"
-                placeholder="Название"
-                type="text"
-                name="name"
-                required
-              />
-              <span className="popup__input-error name-input-error"></span>
-              <input
-                className="popup__input popup__input_value_link"
-                id="link-input"
-                placeholder="Ссылка на картинку"
-                type="url"
-                name="link"
-                required
-              />
-              <span className="popup__input-error link-input-error"></span>
-            </fieldset>
-            <button
-              type="submit"
-              className="popup__button"
-              aria-label="Создать"
-              disabled
-            >
-              Создать
-            </button>
-          </form>
-        </div>
-      </div>
-
-      <div className="popup" id="popup_form_avatar">
-        <div className="popup__container">
-          <form
-            className="popup__form popup__form_type_avatar"
-            id="form_avatar"
-            name="formAvatar"
-            novalidate
-          >
-            <button
-              className="popup__close"
-              type="button"
-              aria-label="Кнопка закрытия формы аватар"
-            ></button>
-            <fieldset className="popup__data">
-              <legend className="popup__title">Обновить аватар</legend>
-              <input
-                className="popup__input popup__input_value_avatar"
-                id="avatar-input"
-                placeholder="Ссылка на новый аватар"
-                type="url"
-                name="avatar"
-                required
-              />
-              <span className="popup__input-error avatar-input-error"></span>
-            </fieldset>
-            <button
-              type="submit"
-              className="popup__button"
-              aria-label="Сохранить"
-              disabled
-            >
-              Сохранить
-            </button>
-          </form>
-        </div>
-      </div>
-      <div className="popup" id="popup_delete_card">
-        <div className="popup__container">
-          <form
-            className="popup__form popup__form_type_delete-card"
-            id="form_delete_card"
-            name="formDeleteCard"
-            novalidate
-          >
-            <button
-              className="popup__close"
-              type="button"
-              aria-label="Кнопка закрытия формы"
-            ></button>
-            <fieldset className="popup__data">
-              <legend className="popup__title">Вы уверены?</legend>
-            </fieldset>
-            <button type="submit" className="popup__button" aria-label="Да">
-              Да
-            </button>
-          </form>
-        </div>
-      </div>
+        <span className="popup__input-error avatar-input-error"></span>
+      </PopupWithForm>
     </div>
   );
 }

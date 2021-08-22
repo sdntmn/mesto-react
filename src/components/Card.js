@@ -1,28 +1,32 @@
 import React from "react";
 
-function Card() {
+function Card({ card, data, onCardClick }) {
+  const userId = data._id;
+  const isOwnerId = userId === card._id;
+
   return (
     <div id="template-element">
       <li className="element">
         <button
-          className="element__trash"
+          className={`element__trash ${isOwnerId ? "element_is-visible" : ""}`}
           type="button"
           aria-label="Удалить"
         ></button>
         <img
           className="element__img"
-          scr="https://w-dog.ru/wallpapers/3/0/309211117975565/kamni-mox-vodopad-derevya-les-sumerki.jpg"
-          alt=""
+          src={card.link}
+          alt={card.name}
+          onClick={(_) => onCardClick(card)}
         />
         <div className="element__title">
-          <h2 className="element__name-mesto">22</h2>
+          <h2 className="element__name-mesto">{card.name}</h2>
           <div className="element__counting-likes">
             <button
               className="element__like"
               type="button"
               aria-label="Поставить лайк"
             ></button>
-            <span className="element__number-likes">0</span>
+            <span className="element__number-likes">{card.likes.length}</span>
           </div>
         </div>
       </li>

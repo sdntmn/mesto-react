@@ -1,16 +1,14 @@
 import React from "react";
-import avatarPath from "../images/image.jpg";
 import Card from "./Card";
 
-function Main() {
-  function handleEditProfileClick() {
-    const btnProfile = document.querySelector(".profile__opened");
-    btnProfile.classList.add("popup_is-opened");
-  }
-
-  function handleAddPlaceClick() {
-    console.log(123);
-  }
+function Main({
+  cards,
+  data,
+  handleEditProfileClick,
+  handleAddPlaceClick,
+  handleEditAvatarClick,
+  handleCardClick,
+}) {
   return (
     <main className="content page__cover">
       <section className="profiles page__cover">
@@ -19,20 +17,21 @@ function Main() {
             <div className="profile__data">
               <div className="profile__change-avatar">
                 <img
-                  className="profile__avatar popup_is-opened"
-                  src={avatarPath}
+                  className="profile__avatar "
+                  src={data.avatar}
                   alt="Фото пользователя"
                 />
                 <button
                   className="profile__opened-avatar"
                   type="button"
                   aria-label="Редактировать аватар"
+                  onClick={handleEditAvatarClick}
                 ></button>
               </div>
 
               <div className="profile__item">
                 <div className="profile__item-name">
-                  <h1 className="profile__item-info">Жак-Ив Кусто</h1>
+                  <h1 className="profile__item-info">{data.about}</h1>
                   <button
                     className="profile__opened"
                     type="button"
@@ -40,7 +39,7 @@ function Main() {
                     onClick={handleEditProfileClick}
                   ></button>
                 </div>
-                <p className="profile__specialization">Исследователь океана</p>
+                <p className="profile__specialization">{data.name}</p>
               </div>
             </div>
             <button
@@ -55,7 +54,14 @@ function Main() {
 
       <section>
         <ul className="elements">
-          <Card />
+          {cards.map((card) => (
+            <Card
+              key={card._id}
+              card={card}
+              data={data}
+              onCardClick={handleCardClick}
+            />
+          ))}
         </ul>
       </section>
     </main>
