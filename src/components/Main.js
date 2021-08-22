@@ -1,14 +1,29 @@
-import React from "react";
 import Card from "./Card";
+import api from "../utils/api";
+import { useEffect, useState } from "react";
 
 function Main({
-  cards,
-  data,
   handleEditProfileClick,
   handleAddPlaceClick,
   handleEditAvatarClick,
   handleCardClick,
 }) {
+  //Синхронный вывод данных User и Card ====================================
+  const [cards, setCards] = useState([]);
+  const [dataUser, setUser] = useState({});
+
+  useEffect(() => {
+    api
+      .renderFirstData()
+      .then(([dataUser, cards]) => {
+        setCards(cards);
+        setUser(dataUser);
+      })
+      .catch((error) => {
+        console.log(`Ошибка получения данных ${error}`);
+      });
+  }, []);
+
   return (
     <main className="content page__cover">
       <section className="profiles page__cover">
@@ -18,7 +33,7 @@ function Main({
               <div className="profile__change-avatar">
                 <img
                   className="profile__avatar "
-                  src={data.avatar}
+                  src={dataUser.avatar}
                   alt="Фото пользователя"
                 />
                 <button
@@ -31,7 +46,7 @@ function Main({
 
               <div className="profile__item">
                 <div className="profile__item-name">
-                  <h1 className="profile__item-info">{data.about}</h1>
+                  <h1 className="profile__item-info">{dataUser.about}</h1>
                   <button
                     className="profile__opened"
                     type="button"
@@ -39,7 +54,7 @@ function Main({
                     onClick={handleEditProfileClick}
                   ></button>
                 </div>
-                <p className="profile__specialization">{data.name}</p>
+                <p className="profile__specialization">{dataUser.name}</p>
               </div>
             </div>
             <button
@@ -58,7 +73,7 @@ function Main({
             <Card
               key={card._id}
               card={card}
-              data={data}
+              data={dataUser}
               onCardClick={handleCardClick}
             />
           ))}
