@@ -18,7 +18,7 @@ function PopupWithForm({
         <form
           className={`popup__form popup__form_type_${name}`}
           id={`form_${name}`}
-          name="formDeleteCard"
+          name={`${name}`}
           onSubmit={onSubmit}
         >
           <button
