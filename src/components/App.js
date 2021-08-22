@@ -3,31 +3,14 @@ import Header from "./Header";
 import ImagePopup from "./ImagePopup";
 import Main from "./Main";
 import PopupWithForm from "./PopupWithForm";
-import api from "../utils/api";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 function App() {
-  //Синхронный вывод данных User и Card ====================================
-  const [cards, setCards] = useState([]);
-  const [dataUser, setUser] = useState([]);
-
-  useEffect(() => {
-    api
-      .renderFirstData()
-      .then(([dataUser, cards]) => {
-        setCards(cards);
-        setUser(dataUser);
-      })
-      .catch((error) => {
-        console.log(`Ошибка получения данных ${error}`);
-      });
-  }, []);
-
   // Первоначальное состояние попапа Profile (False - закрыт)===============
-  const [isEditProfilePopupOpen, setProfilePopupOpen] = useState(false);
+  const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
   // Обработчик состояние попапа Profile (Меняем на True)===================
   const onEditProfile = () => {
-    setProfilePopupOpen(true);
+    setIsEditProfilePopupOpen(true);
   };
 
   // Первоначальное состояние попапа Place (False - закрыт)=================
@@ -40,7 +23,6 @@ function App() {
   const [isEditAvatarPopupOpen, setAvatarPopupOpen] = useState(false);
   // Обработчик состояние попапа Avatar (Меняем на True)====================
   const onEditAvatar = () => {
-    console.log("Avatar");
     setAvatarPopupOpen(true);
   };
 
@@ -49,23 +31,20 @@ function App() {
   // Обработчик состояние попапа Foto (Меняем на полученный props)==========
   const onCardClick = (card) => {
     setSelectedCard(card);
-    console.log(card);
   };
 
-  // Закрытие попапа (смена состояния на - False)===========================
+  // Закрытие попапа (смена состояния на - False или Null)==================
   function closeAllPopups() {
-    setProfilePopupOpen(false);
+    setIsEditProfilePopupOpen(false);
     setPlacePopupOpen(false);
     setAvatarPopupOpen(false);
-    setSelectedCard(false);
+    setSelectedCard(null);
   }
 
   return (
-    <div classNameName="page" id="root">
+    <div className="page">
       <Header />
       <Main
-        cards={cards}
-        data={dataUser}
         handleEditProfileClick={onEditProfile}
         handleAddPlaceClick={onAddPlace}
         handleEditAvatarClick={onEditAvatar}
@@ -117,7 +96,7 @@ function App() {
           maxLength="30"
           placeholder="Название"
           type="text"
-          name="name"
+          name="place"
           required
         />
         <span className="popup__input-error name-input-error"></span>
