@@ -3,7 +3,11 @@ import Header from "./Header";
 import ImagePopup from "./ImagePopup";
 import Main from "./Main";
 import PopupWithForm from "./PopupWithForm";
-import { useState } from "react";
+import EditProfilePopup from "./EditProfilePopup";
+import EditAvatarPopup from "./EditAvatarPopup";
+import AddPlacePopup from "./AddPlacePopup";
+import api from "../utils/api";
+import { useEffect, useState } from "react";
 
 function App() {
   // Первоначальное состояние попапа Profile (False - закрыт)===============
@@ -33,6 +37,24 @@ function App() {
     setSelectedCard(card);
   };
 
+  
+
+  //Синхронный вывод данных User и Card ====================================
+  const [cards, setCards] = useState([]);
+  const [currentUser, setCurrentUser] = useState({})
+
+  useEffect(() => {
+    api
+      .renderFirstData()
+      .then(([currentUser, cards]) => {
+        setCards(cards);
+        setCurrentUser(currentUser);
+      })
+      .catch((error) => {
+        console.log(`Ошибка получения данных ${error}`);
+      });
+  }, []);
+
   // Закрытие попапа (смена состояния на - False или Null)==================
   function closeAllPopups() {
     setIsEditProfilePopupOpen(false);
@@ -45,6 +67,8 @@ function App() {
     <div className="page">
       <Header />
       <Main
+        cards={cards} 
+        dataUser={currentUser}
         handleEditProfileClick={onEditProfile}
         handleAddPlaceClick={onAddPlace}
         handleEditAvatarClick={onEditAvatar}
@@ -52,82 +76,28 @@ function App() {
       />
       <Footer />
       <ImagePopup card={selectedCard} onClose={closeAllPopups} />
-      <PopupWithForm
+      <EditProfilePopup
         isOpen={isEditProfilePopupOpen}
         onClose={closeAllPopups}
-        name="profile"
-        title="Редактировать профиль"
-        btnName="Сохранить"
       >
-        <input
-          className="popup__input popup__input_value_name"
-          id="name-user"
-          minLength="2"
-          maxLength="40"
-          placeholder="Введите ФИО"
-          type="text"
-          name="name"
-          required
-        />
-        <span className="popup__input-error name-user-error"></span>
-        <input
-          className="popup__input popup__input_value_job"
-          id="about-input"
-          minLength="2"
-          maxLength="200"
-          placeholder="Введите специализацию"
-          type="text"
-          name="about"
-          required
-        />
-        <span className="popup__input-error about-input-error"></span>
-      </PopupWithForm>
-      <PopupWithForm
+      </EditProfilePopup>
+      <AddPlacePopup
         isOpen={isAddPlacePopupOpen}
         onClose={closeAllPopups}
-        name="mesto"
-        title="Новое место"
-        btnName="Создать"
       >
-        <input
-          className="popup__input popup__input_value_mesto"
-          id="name-input"
-          minLength="2"
-          maxLength="30"
-          placeholder="Название"
-          type="text"
-          name="place"
-          required
-        />
-        <span className="popup__input-error name-input-error"></span>
-        <input
-          className="popup__input popup__input_value_link"
-          id="link-input"
-          placeholder="Ссылка на картинку"
-          type="url"
-          name="link"
-          required
-        />
-        <span className="popup__input-error link-input-error"></span>
-      </PopupWithForm>
-      <PopupWithForm
+      </AddPlacePopup>
+      <EditAvatarPopup
         isOpen={isEditAvatarPopupOpen}
         onClose={closeAllPopups}
-        name="avatar"
-        title="Обновить аватар"
-        btnName="Сохранить"
-      >
-        <input
-          className="popup__input popup__input_value_avatar"
-          id="avatar-input"
-          placeholder="Ссылка на новый аватар"
-          type="url"
-          name="avatar"
-          required
-        />
-
-        <span className="popup__input-error avatar-input-error"></span>
-      </PopupWithForm>
+      > 
+      </EditAvatarPopup>
+      <PopupWithForm
+          onClose={closeAllPopups}
+          name="delete_card"
+          title="Вы уверены?"
+          btnName="Да"
+        >
+        </PopupWithForm>
     </div>
   );
 }

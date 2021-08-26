@@ -1,28 +1,14 @@
 import Card from "./Card";
-import api from "../utils/api";
-import { useEffect, useState } from "react";
 
 function Main({
+  cards,
+  dataUser,
   handleEditProfileClick,
   handleAddPlaceClick,
   handleEditAvatarClick,
   handleCardClick,
 }) {
-  //Синхронный вывод данных User и Card ====================================
-  const [cards, setCards] = useState([]);
-  const [dataUser, setUser] = useState({});
 
-  useEffect(() => {
-    api
-      .renderFirstData()
-      .then(([dataUser, cards]) => {
-        setCards(cards);
-        setUser(dataUser);
-      })
-      .catch((error) => {
-        console.log(`Ошибка получения данных ${error}`);
-      });
-  }, []);
 
   return (
     <main className="content page__cover">
