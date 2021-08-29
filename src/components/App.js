@@ -8,6 +8,7 @@ import EditAvatarPopup from "./EditAvatarPopup";
 import AddPlacePopup from "./AddPlacePopup";
 import api from "../utils/api";
 import { useEffect, useState } from "react";
+import { CurrentUserContext } from "../contexts/CurrentUserContext";
 
 function App() {
   // Первоначальное состояние попапа Profile (False - закрыт)===============
@@ -37,11 +38,9 @@ function App() {
     setSelectedCard(card);
   };
 
-  
-
   //Синхронный вывод данных User и Card ====================================
   const [cards, setCards] = useState([]);
-  const [currentUser, setCurrentUser] = useState({})
+  const [currentUser, setCurrentUser] = useState({});
 
   useEffect(() => {
     api
@@ -63,42 +62,55 @@ function App() {
     setSelectedCard(null);
   }
 
+  // Исправление(смена) данных пользователя=================================
+  function handleUpdateUser(data) {
+    api
+      .changeDataUser(data)
+      .then((currentUser) => {
+        console.log(currentUser);
+        setCurrentUser(currentUser);
+        closeAllPopups();
+      })
+      .catch((error) => {
+        console.log(`Ошибка получения данных ${error}`);
+      });
+  }
+
   return (
-    <div className="page">
-      <Header />
-      <Main
-        cards={cards} 
-        dataUser={currentUser}
-        handleEditProfileClick={onEditProfile}
-        handleAddPlaceClick={onAddPlace}
-        handleEditAvatarClick={onEditAvatar}
-        handleCardClick={onCardClick}
-      />
-      <Footer />
-      <ImagePopup card={selectedCard} onClose={closeAllPopups} />
-      <EditProfilePopup
-        isOpen={isEditProfilePopupOpen}
-        onClose={closeAllPopups}
-      >
-      </EditProfilePopup>
-      <AddPlacePopup
-        isOpen={isAddPlacePopupOpen}
-        onClose={closeAllPopups}
-      >
-      </AddPlacePopup>
-      <EditAvatarPopup
-        isOpen={isEditAvatarPopupOpen}
-        onClose={closeAllPopups}
-      > 
-      </EditAvatarPopup>
-      <PopupWithForm
+    <CurrentUserContext.Provider value={currentUser}>
+      <div className="page">
+        <Header />
+        <Main
+          cards={cards}
+          setCards={setCards}
+          handleEditProfileClick={onEditProfile}
+          handleAddPlaceClick={onAddPlace}
+          handleEditAvatarClick={onEditAvatar}
+          handleCardClick={onCardClick}
+        />
+        <Footer />
+        <ImagePopup card={selectedCard} onClose={closeAllPopups} />
+        <EditProfilePopup
+          isOpen={isEditProfilePopupOpen}
+          onClose={closeAllPopups}
+          onUpdateUser={handleUpdateUser}
+        ></EditProfilePopup>
+        <AddPlacePopup
+          isOpen={isAddPlacePopupOpen}
+          onClose={closeAllPopups}
+        ></AddPlacePopup>
+        <EditAvatarPopup
+          isOpen={isEditAvatarPopupOpen}
+          onClose={closeAllPopups}
+        ></EditAvatarPopup>
+        <PopupWithForm
           onClose={closeAllPopups}
           name="delete_card"
           title="Вы уверены?"
           btnName="Да"
-        >
-        </PopupWithForm>
-    </div>
+        ></PopupWithForm>
+      </div>
+    </CurrentUserContext.Provider>
   );
 }
 

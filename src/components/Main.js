@@ -1,14 +1,46 @@
 import Card from "./Card";
+import React, { useContext } from "react";
+import api from "../utils/api";
+import { CurrentUserContext } from "../contexts/CurrentUserContext";
 
 function Main({
   cards,
-  dataUser,
+  setCards,
   handleEditProfileClick,
   handleAddPlaceClick,
   handleEditAvatarClick,
   handleCardClick,
 }) {
+  const currentUser = useContext(CurrentUserContext);
 
+  function handleCardLike(card) {
+    // Снова проверяем, есть ли уже лайк на этой карточке
+    const isLiked = card.likes.some((i) => i._id === currentUser._id);
+
+    // Отправляем запрос в API и получаем обновлённые данные карточки
+    api
+      .changeLikeCardStatus(card._id, isLiked)
+      .then((newCard) => {
+        console.log(isLiked);
+        setCards((state) =>
+          state.map((c) => (c._id === card._id ? newCard : c))
+        );
+      })
+      .catch((error) => {
+        console.log(`Ошибка данных лайков ${error}`);
+      });
+  }
+
+  function handleCardDelete(card) {
+    api
+      .deleteCardUser(card._id)
+      .then(() => {
+        setCards(cards.filter((card) => card._id !== card._id));
+      })
+      .catch((error) => {
+        console.log(`Ошибка удаления карточки ${error}`);
+      });
+  }
 
   return (
     <main className="content page__cover">
@@ -19,7 +51,7 @@ function Main({
               <div className="profile__change-avatar">
                 <img
                   className="profile__avatar "
-                  src={dataUser.avatar}
+                  src={currentUser.avatar}
                   alt="Фото пользователя"
                 />
                 <button
@@ -32,7 +64,7 @@ function Main({
 
               <div className="profile__item">
                 <div className="profile__item-name">
-                  <h1 className="profile__item-info">{dataUser.about}</h1>
+                  <h1 className="profile__item-info">{currentUser.about}</h1>
                   <button
                     className="profile__opened"
                     type="button"
@@ -40,7 +72,7 @@ function Main({
                     onClick={handleEditProfileClick}
                   ></button>
                 </div>
-                <p className="profile__specialization">{dataUser.name}</p>
+                <p className="profile__specialization">{currentUser.name}</p>
               </div>
             </div>
             <button
@@ -59,8 +91,9 @@ function Main({
             <Card
               key={card._id}
               card={card}
-              data={dataUser}
               onCardClick={handleCardClick}
+              onCardLike={handleCardLike}
+              onCardDelete={handleCardDelete}
             />
           ))}
         </ul>
