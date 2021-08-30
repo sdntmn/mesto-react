@@ -5,8 +5,7 @@ function Card({ card, onCardClick, onCardLike, onCardDelete }) {
   const currentUser = useContext(CurrentUserContext);
   // Определяем, являемся ли мы владельцем текущей карточки=================
   const isOwn = card.owner._id === currentUser._id;
-  console.log(card.owner._id);
-  console.log(card.owner._id);
+
   // Создаём переменную=====================================================
   const cardDeleteButtonClassName = `element__trash ${
     isOwn ? "element_is-visible" : ""
@@ -17,7 +16,6 @@ function Card({ card, onCardClick, onCardLike, onCardDelete }) {
   const cardLikeButtonClassName = `element__like ${
     isLiked ? "element__like_active" : ""
   }`;
-  console.log(cardLikeButtonClassName);
 
   function handleLikeClick() {
     onCardLike(card);

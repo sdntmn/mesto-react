@@ -3,15 +3,28 @@ import PopupWithForm from "./PopupWithForm";
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
 
 export default function EditProfilePopup({ isOpen, onClose, onUpdateUser }) {
+  // Стейт, в котором содержится значение инпута
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
 
   const currentUser = useContext(CurrentUserContext);
+  console.log(currentUser);
 
   useEffect(() => {
     setName(currentUser.name);
+    console.log(currentUser.name);
     setDescription(currentUser.about);
   }, [currentUser]);
+
+  // Обработчик изменения инпута обновляет стейт
+  function handleChangeInputName(evt) {
+    setName(evt.target.value);
+  }
+
+  // Обработчик изменения инпута обновляет стейт
+  function handleChangeInputDescription(evt) {
+    setDescription(evt.target.value);
+  }
 
   function handleSubmit(evt) {
     // Запрещаем браузеру переходить по адресу формы
@@ -42,6 +55,7 @@ export default function EditProfilePopup({ isOpen, onClose, onUpdateUser }) {
         type="text"
         name="name"
         value={name ? name : ""}
+        onChange={handleChangeInputName}
         required
       />
       <span className="popup__input-error name-user-error"></span>
@@ -54,6 +68,7 @@ export default function EditProfilePopup({ isOpen, onClose, onUpdateUser }) {
         type="text"
         name="about"
         value={description ? description : ""}
+        onChange={handleChangeInputDescription}
         required
       />
       <span className="popup__input-error about-input-error"></span>

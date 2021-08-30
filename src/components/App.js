@@ -61,6 +61,7 @@ function App() {
     setAvatarPopupOpen(false);
     setSelectedCard(null);
   }
+  console.log(currentUser);
 
   // Исправление(смена) данных пользователя=================================
   function handleUpdateUser(data) {
@@ -73,6 +74,20 @@ function App() {
       })
       .catch((error) => {
         console.log(`Ошибка получения данных ${error}`);
+      });
+  }
+
+  // Смена аватара пользователя=============================================
+  function handleUpdateAvatar(data) {
+    api
+      .changeAvatarUser(data)
+      .then((currentUser) => {
+        console.log(currentUser);
+        setCurrentUser(currentUser);
+        closeAllPopups();
+      })
+      .catch((error) => {
+        console.log(`Ошибка данных ${error}`);
       });
   }
 
@@ -102,6 +117,7 @@ function App() {
         <EditAvatarPopup
           isOpen={isEditAvatarPopupOpen}
           onClose={closeAllPopups}
+          onUpdateAvatar={handleUpdateAvatar}
         ></EditAvatarPopup>
         <PopupWithForm
           onClose={closeAllPopups}
