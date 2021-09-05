@@ -8,7 +8,7 @@ export default function EditProfilePopup({ isOpen, onClose, onUpdateUser }) {
   const [description, setDescription] = useState("");
 
   const currentUser = useContext(CurrentUserContext);
-
+  //сделать что-то после рендера
   useEffect(() => {
     setName("");
     setDescription("");

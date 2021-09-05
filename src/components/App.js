@@ -77,11 +77,9 @@ function App() {
 
   // Смена аватара пользователя=============================================
   function handleUpdateAvatar(data) {
-    console.log(data);
     api
       .changeAvatarUser(data)
       .then((currentUser) => {
-        console.log(currentUser);
         setCurrentUser(currentUser);
         closeAllPopups();
       })
@@ -98,7 +96,6 @@ function App() {
     api
       .changeLikeCardStatus(card._id, isLiked)
       .then((newCard) => {
-        console.log(isLiked);
         setCards((state) =>
           state.map((item) => (item._id === card._id ? newCard : item))
         );
@@ -120,13 +117,15 @@ function App() {
   }
 
   function handleAddPlaceSubmit(userCard) {
-    console.log(userCard);
-    api.setCardUser(userCard).then((newArrCard) => {
-      console.log(newArrCard);
-      console.log(userCard);
-      setCards([newArrCard, ...cards]);
-    });
-    closeAllPopups();
+    api
+      .setCardUser(userCard)
+      .then((newArrCard) => {
+        setCards([newArrCard, ...cards]);
+        closeAllPopups();
+      })
+      .catch((error) => {
+        console.log(`Ошибка данных карточки ${error}`);
+      });
   }
 
   return (
