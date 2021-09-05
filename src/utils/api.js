@@ -45,7 +45,7 @@ export class Api {
   }
 
   // Проверка данных лайка карточки ==========================================
-  getLikeCardId(cardID, like) {
+  changeLikeCardStatus(cardID, like) {
     return fetch(this._url + `/cards/likes/${cardID}`, {
       method: like ? "DELETE" : "PUT",
       headers: this._headers,
