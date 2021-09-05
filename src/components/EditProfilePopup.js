@@ -8,11 +8,14 @@ export default function EditProfilePopup({ isOpen, onClose, onUpdateUser }) {
   const [description, setDescription] = useState("");
 
   const currentUser = useContext(CurrentUserContext);
-  console.log(currentUser);
+
+  useEffect(() => {
+    setName("");
+    setDescription("");
+  }, [isOpen]);
 
   useEffect(() => {
     setName(currentUser.name);
-    console.log(currentUser.name);
     setDescription(currentUser.about);
   }, [currentUser]);
 

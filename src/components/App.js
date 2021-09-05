@@ -61,14 +61,12 @@ function App() {
     setAvatarPopupOpen(false);
     setSelectedCard(null);
   }
-  console.log(currentUser);
 
   // Исправление(смена) данных пользователя=================================
   function handleUpdateUser(data) {
     api
       .changeDataUser(data)
       .then((currentUser) => {
-        console.log(currentUser);
         setCurrentUser(currentUser);
         closeAllPopups();
       })
@@ -79,6 +77,7 @@ function App() {
 
   // Смена аватара пользователя=============================================
   function handleUpdateAvatar(data) {
+    console.log(data);
     api
       .changeAvatarUser(data)
       .then((currentUser) => {
@@ -89,6 +88,45 @@ function App() {
       .catch((error) => {
         console.log(`Ошибка данных ${error}`);
       });
+  }
+
+  function handleCardLike(card) {
+    // Снова проверяем, есть ли уже лайк на этой карточке
+    const isLiked = card.likes.some((i) => i._id === currentUser._id);
+
+    // Отправляем запрос в API и получаем обновлённые данные карточки
+    api
+      .changeLikeCardStatus(card._id, isLiked)
+      .then((newCard) => {
+        console.log(isLiked);
+        setCards((state) =>
+          state.map((item) => (item._id === card._id ? newCard : item))
+        );
+      })
+      .catch((error) => {
+        console.log(`Ошибка данных лайков ${error}`);
+      });
+  }
+
+  function handleCardDelete(card) {
+    api
+      .deleteCardUser(card._id)
+      .then(() => {
+        setCards(cards.filter((c) => c._id !== card._id));
+      })
+      .catch((error) => {
+        console.log(`Ошибка удаления карточки ${error}`);
+      });
+  }
+
+  function handleAddPlaceSubmit(userCard) {
+    console.log(userCard);
+    api.setCardUser(userCard).then((newArrCard) => {
+      console.log(newArrCard);
+      console.log(userCard);
+      setCards([newArrCard, ...cards]);
+    });
+    closeAllPopups();
   }
 
   return (
@@ -102,6 +140,8 @@ function App() {
           handleAddPlaceClick={onAddPlace}
           handleEditAvatarClick={onEditAvatar}
           handleCardClick={onCardClick}
+          onCardLike={handleCardLike}
+          onCardDelete={handleCardDelete}
         />
         <Footer />
         <ImagePopup card={selectedCard} onClose={closeAllPopups} />
@@ -113,6 +153,7 @@ function App() {
         <AddPlacePopup
           isOpen={isAddPlacePopupOpen}
           onClose={closeAllPopups}
+          onUpdateCard={handleAddPlaceSubmit}
         ></AddPlacePopup>
         <EditAvatarPopup
           isOpen={isEditAvatarPopupOpen}
